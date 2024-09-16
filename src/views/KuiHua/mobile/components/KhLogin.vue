@@ -119,7 +119,9 @@
             auto-complete="off"
             placeholder="手机号或微信号"
         >
-          <template #prefix><svg-icon icon-class="user" class="el-input__icon input-icon" /></template>
+          <template #prefix>
+            <svg-icon icon-class="user" class="el-input__icon input-icon"/>
+          </template>
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
@@ -130,7 +132,9 @@
             auto-complete="off"
             placeholder="密码"
         >
-          <template #prefix><svg-icon icon-class="password" class="el-input__icon input-icon" /></template>
+          <template #prefix>
+            <svg-icon icon-class="password" class="el-input__icon input-icon"/>
+          </template>
         </el-input>
       </el-form-item>
       <el-form-item prop="code" v-if="captchaEnabled">
@@ -142,13 +146,14 @@
             style="width: 63%"
             @keyup.enter="handleLogin"
         >
-          <template #prefix><svg-icon icon-class="validCode" class="el-input__icon input-icon" /></template>
+          <template #prefix>
+            <svg-icon icon-class="validCode" class="el-input__icon input-icon"/>
+          </template>
         </el-input>
         <div class="register-code">
           <img :src="codeUrl" @click="getCode" class="register-code-img"/>
         </div>
       </el-form-item>
-      <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox>
       <el-form-item style="width:100%;">
         <el-button
             :loading="loading"
@@ -173,10 +178,11 @@ import {getCodeImg} from "@/api/login.js";
 import {ElMessageBox} from "element-plus";
 import {khRegister} from "@/api/KuiHua/khuser.js";
 import Cookies from "js-cookie";
-import {encrypt} from "@/utils/jsencrypt.js";
+import {decrypt, encrypt} from "@/utils/jsencrypt.js";
 import useUserStore from "@/store/modules/user.js";
-import {setToken} from "@/utils/auth.js";
-const { proxy } = getCurrentInstance();
+import {getToken, setToken} from "@/utils/auth.js";
+
+const {proxy} = getCurrentInstance();
 const visible = defineModel()
 const props = defineProps({
   model: {
@@ -190,7 +196,6 @@ const userStore = useUserStore()
 const loginForm = ref({
   username: "",
   password: "",
-  rememberMe: false,
   code: "",
   uuid: ""
 });
@@ -214,9 +219,9 @@ const equalToPassword = (rule, value, callback) => {
   }
 };
 const loginRules = {
-  username: [{ required: true, trigger: "blur", message: "请输入您的手机号或微信号" }],
-  password: [{ required: true, trigger: "blur", message: "请输入您的密码" }],
-  code: [{ required: true, trigger: "change", message: "请输入验证码" }]
+  username: [{required: true, trigger: "blur", message: "请输入您的手机号或微信号"}],
+  password: [{required: true, trigger: "blur", message: "请输入您的密码"}],
+  code: [{required: true, trigger: "change", message: "请输入验证码"}]
 };
 const registerRules = {
   phone: [
@@ -229,11 +234,11 @@ const registerRules = {
   ],
   wechatNumber: [
     {required: true, trigger: "blur", message: "请输入您的微信号"},
-    { min: 2, max: 20, message: "微信号长度必须介于 2 和 20 之间", trigger: "blur" }
+    {min: 2, max: 20, message: "微信号长度必须介于 2 和 20 之间", trigger: "blur"}
   ],
   teamCode: [
     {required: true, trigger: "blur", message: "请输入您的团队邀请码"},
-    { min: 2, max: 20, message: "团队邀请码长度必须介于 2 和 20 之间", trigger: "blur" }
+    {min: 2, max: 20, message: "团队邀请码长度必须介于 2 和 20 之间", trigger: "blur"}
   ],
   password: [
     {required: true, trigger: "blur", message: "请输入您的密码"},
@@ -263,12 +268,14 @@ function handleRegister() {
       loading.value = true;
       khRegister(registerForm.value).then(res => {
         const username = registerForm.value.phone;
+        loading.value = false;
         setToken(res.token)
         userStore.token = res.token;
         ElMessageBox.alert("<font color='red'>恭喜你，您的账号 " + username + " 注册成功！</font>", "系统提示", {
           dangerouslyUseHTMLString: true,
           type: "success",
         }).then(() => {
+          loading.value = false;
           visible.value = false
         }).catch(() => {
         });
@@ -281,24 +288,20 @@ function handleRegister() {
     }
   });
 }
+
 function handleLogin() {
   proxy.$refs.loginRef.validate(valid => {
     if (valid) {
       loading.value = true;
-      Cookies.set("username", loginForm.value.username, { expires: 30 });
-      Cookies.set("password", encrypt(loginForm.value.password), { expires: 30 });
-      Cookies.set("rememberMe", loginForm.value.rememberMe, { expires: 30 });
+      Cookies.set("username", loginForm.value.username, {expires: 30});
+      Cookies.set("password", encrypt(loginForm.value.password), {expires: 30});
+      Cookies.set("rememberMe", loginForm.value.rememberMe, {expires: 30});
       // 调用action的登录方法
       userStore.khlogin(loginForm.value).then(() => {
-        const query = route.query;
-        const otherQueryParams = Object.keys(query).reduce((acc, cur) => {
-          if (cur !== "redirect") {
-            acc[cur] = query[cur];
-          }
-          return acc;
-        }, {});
         visible.value = false
+        loading.value = false;
       }).catch(() => {
+        loading.value = false
         // 重新获取验证码
         if (captchaEnabled.value) {
           getCode();
@@ -307,6 +310,26 @@ function handleLogin() {
     }
   });
 }
+
+function cookieLogin() {
+  const username = Cookies.get("username");
+  const password = Cookies.get("password");
+  if (username && !getToken()) {
+    loginForm.value = {
+      username: username,
+      password: decrypt(password),
+    };
+    userStore.khlogin(loginForm.value).then(() => {
+      visible.value = false
+      console.log("cookies 登录成功")
+    }).catch(()=>{
+      Cookies.remove("username");
+      Cookies.remove("password");
+    })
+  }
+}
+
+cookieLogin();
 getCode();
 </script>
 

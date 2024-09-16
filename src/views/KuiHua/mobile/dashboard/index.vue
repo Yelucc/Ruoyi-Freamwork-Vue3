@@ -15,7 +15,7 @@
     <div class="join" @click="handleOnClickJoin">参与活动</div>
 
 
-    <KhLogin v-model="visible"></KhLogin>
+    <KhLogin v-model="loginVisible"></KhLogin>
   </div>
 </template>
 
@@ -25,13 +25,13 @@ import KhLogin from "@/views/KuiHua/mobile/components/KhLogin.vue";
 import {getToken} from "@/utils/auth.js";
 
 const leaderboard = ref([])
-const visible = ref(false)
+const loginVisible = ref(false)
 
 function handleOnClickJoin() {
   if (getToken()){
     console.log("用户已登录")
   }else {
-    visible.value = true;
+    loginVisible.value = true;
   }
 
 }
