@@ -16,7 +16,17 @@ export function getScoreRecord(recordId) {
     method: 'get'
   })
 }
-
+// 移动端上传葵花分数记录
+export function submitScoreRecord(data) {
+  return request({
+    url: '/KuiHua/scoreRecord/submit',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    method: 'post',
+    data: data
+  })
+}
 // 新增葵花分数记录
 export function addScoreRecord(data) {
   return request({

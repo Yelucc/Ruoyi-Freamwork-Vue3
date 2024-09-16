@@ -16,6 +16,7 @@
 
 
     <KhLogin v-model="loginVisible"></KhLogin>
+    <KhsubmitSharedDialog v-model="sharedVisiable"></KhsubmitSharedDialog>
   </div>
 </template>
 
@@ -23,14 +24,16 @@
 import {listLeaderboard} from "@/api/KuiHua/team.js";
 import KhLogin from "@/views/KuiHua/mobile/components/KhLogin.vue";
 import {getToken} from "@/utils/auth.js";
+import KhsubmitSharedDialog from "@/views/KuiHua/mobile/components/KhsubmitSharedDialog.vue";
 
 const leaderboard = ref([])
 const loginVisible = ref(false)
+const sharedVisiable = ref(false)
 
 function handleOnClickJoin() {
-  if (getToken()){
-    console.log("用户已登录")
-  }else {
+  if (getToken()) {
+    sharedVisiable.value = true;
+  } else {
     loginVisible.value = true;
   }
 
