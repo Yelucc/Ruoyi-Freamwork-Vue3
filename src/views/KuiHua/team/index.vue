@@ -9,26 +9,20 @@
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="部门ID" prop="deptId">
-        <el-input
-          v-model="queryParams.deptId"
-          placeholder="请输入部门ID"
-          clearable
-          @keyup.enter="handleQuery"
+      <el-form-item style="width: 200px;" label="关联部门" prop="deptId">
+        <el-tree-select
+            v-model="queryParams.deptId"
+            :data="deptOptions"
+            :props="{ value: 'deptId', label: 'deptName', children: 'children' }"
+            value-key="deptId"
+            placeholder="选择关联部门"
+            check-strictly
         />
       </el-form-item>
       <el-form-item label="团队名称" prop="teamName">
         <el-input
           v-model="queryParams.teamName"
           placeholder="请输入团队名称"
-          clearable
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="团队邀请码" prop="teamCode">
-        <el-input
-          v-model="queryParams.teamCode"
-          placeholder="请输入团队邀请码"
           clearable
           @keyup.enter="handleQuery"
         />
@@ -106,8 +100,18 @@
     <!-- 添加或修改团队管理对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="teamRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="部门ID" prop="deptId">
-          <el-input v-model="form.deptId" placeholder="请输入部门ID" />
+<!--        <el-form-item label="部门ID" prop="deptId">-->
+<!--          <el-input v-model="form.deptId" placeholder="请输入部门ID" />-->
+<!--        </el-form-item>-->
+        <el-form-item style="width: 200px;" label="关联部门" prop="deptId">
+          <el-tree-select
+              v-model="form.deptId"
+              :data="deptOptions"
+              :props="{ value: 'deptId', label: 'deptName', children: 'children' }"
+              value-key="deptId"
+              placeholder="选择关联部门"
+              check-strictly
+          />
         </el-form-item>
         <el-form-item label="团队名称" prop="teamName">
           <el-input v-model="form.teamName" placeholder="请输入团队名称" />
@@ -128,6 +132,7 @@
 
 <script setup name="Team">
 import { listTeam, getTeam, delTeam, addTeam, updateTeam } from "@/api/KuiHua/team";
+import {listDept} from "@/api/system/dept.js";
 
 const { proxy } = getCurrentInstance();
 
@@ -140,6 +145,7 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
+const deptOptions = ref([]);
 
 const data = reactive({
   form: {},
@@ -173,6 +179,9 @@ function getList() {
     teamList.value = response.rows;
     total.value = response.total;
     loading.value = false;
+  });
+  listDept().then(response => {
+    deptOptions.value = proxy.handleTree(response.data, "deptId");
   });
 }
 

@@ -12,6 +12,7 @@ import usePermissionStore from '@/store/modules/permission'
 NProgress.configure({ showSpinner: false });
 
 const whiteList = ['/login', '/register'];
+const kuiHuaList = ['/dashboard']
 
 router.beforeEach((to, from, next) => {
   NProgress.start()
@@ -49,6 +50,11 @@ router.beforeEach((to, from, next) => {
       }
     }
   } else {
+    if (kuiHuaList.some(item=>to.path.startsWith(item))){
+      next()
+      NProgress.done()
+      return
+    }
     // 没有token
     if (whiteList.indexOf(to.path) !== -1) {
       // 在免登录白名单，直接进入

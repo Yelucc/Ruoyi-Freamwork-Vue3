@@ -8,7 +8,13 @@ export function listTeam(query) {
     params: query
   })
 }
-
+// 查询团队排行榜
+export function listLeaderboard() {
+  return request({
+    url: '/KuiHua/team/leaderboard',
+    method: 'get'
+  })
+}
 // 查询团队管理详细
 export function getTeam(teamId) {
   return request({

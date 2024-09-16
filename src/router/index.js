@@ -1,7 +1,7 @@
 import { createWebHistory, createRouter } from 'vue-router'
 /* Layout */
 import Layout from '@/layout'
-
+import PortalLayout from '@/views/KuiHua/mobile/layout';
 /**
  * Note: 路由配置项
  *
@@ -43,6 +43,11 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/khLogin',
+    component: () => import('@/views/KuiHua/mobile/components/KhLogin.vue'),
+    hidden: true
+  },
+  {
     path: '/register',
     component: () => import('@/views/register'),
     hidden: true
@@ -58,17 +63,31 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: '',
+    path: '/admin',
     component: Layout,
-    redirect: '/index',
+    redirect: '/admin/index',
     children: [
       {
-        path: '/index',
+        path: '/admin/index',
         component: () => import('@/views/index'),
         name: 'Index',
         meta: { title: '首页', icon: 'dashboard', affix: true }
       }
     ]
+  },
+  {
+    path: '/',
+    component: PortalLayout,
+    redirect: '/dashboard',
+    hidden: true,
+    children: [
+      {
+        path: '/dashboard',
+        component: () => import('@/views/KuiHua/mobile/dashboard'),
+        name: 'Dashboard',
+        meta: { title: 'Home', icon: 'dashboard', affix: true },
+      },
+    ],
   },
   {
     path: '/user',

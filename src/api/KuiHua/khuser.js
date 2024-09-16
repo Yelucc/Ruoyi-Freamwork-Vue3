@@ -1,4 +1,32 @@
 import request from '@/utils/request'
+// 葵花用户注册
+export function khRegister(data) {
+  return request({
+    url: '/KuiHua/khuser/register',
+    headers: {
+      isToken: false
+    },
+    method: 'post',
+    data: data
+  })
+}
+export function khLogin(username, password, code, uuid) {
+  const data = {
+    username,
+    password,
+    code,
+    uuid
+  }
+  return request({
+    url: '/KuiHua/khuser/login',
+    headers: {
+      isToken: false,
+      repeatSubmit: false
+    },
+    method: 'post',
+    data: data
+  })
+}
 
 // 查询用户管理列表
 export function listKhuser(query) {
