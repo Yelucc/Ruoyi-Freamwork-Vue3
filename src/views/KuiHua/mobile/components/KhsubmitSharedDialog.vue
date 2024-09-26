@@ -69,7 +69,7 @@ const data = reactive({
     ],
   }
 });
-
+const emit = defineEmits(['callback'])
 const {form, rules} = toRefs(data);
 // 表单重置
 function reset() {
@@ -110,6 +110,7 @@ function submitForm() {
       submitScoreRecord(formData).then(res => {
         proxy.$modal.msgSuccess("提交成功");
         visible.value = false;
+        emit('callback')
       })
     }
   });

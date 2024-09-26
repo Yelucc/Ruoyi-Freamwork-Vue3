@@ -15,8 +15,8 @@
     <div class="join" @click="handleOnClickJoin">参与活动</div>
 
 
-    <KhLogin v-model="loginVisible"></KhLogin>
-    <KhsubmitSharedDialog v-model="sharedVisiable"></KhsubmitSharedDialog>
+    <KhLogin v-model="loginVisible"/>
+    <KhsubmitSharedDialog v-model="sharedVisiable" @callback="getLeaderboard"/>
   </div>
 </template>
 

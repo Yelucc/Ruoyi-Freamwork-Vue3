@@ -66,6 +66,7 @@ export const constantRoutes = [
     path: '/admin',
     component: Layout,
     redirect: '/admin/index',
+    permissions: ['KuiHua:scoreRecord:list'],
     children: [
       {
         path: '/admin/index',

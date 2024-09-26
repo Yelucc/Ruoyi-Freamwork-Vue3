@@ -49,7 +49,8 @@
             icon="Plus"
             @click="handleAdd"
             v-hasPermi="['KuiHua:scoreRecord:add']"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -59,7 +60,8 @@
             :disabled="single"
             @click="handleUpdate"
             v-hasPermi="['KuiHua:scoreRecord:edit']"
-        >修改</el-button>
+        >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -69,7 +71,8 @@
             :disabled="multiple"
             @click="handleDelete"
             v-hasPermi="['KuiHua:scoreRecord:remove']"
-        >删除</el-button>
+        >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -78,26 +81,31 @@
             icon="Download"
             @click="handleExport"
             v-hasPermi="['KuiHua:scoreRecord:export']"
-        >导出</el-button>
+        >导出
+        </el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="scoreRecordList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="记录ID" align="center" prop="recordId" />
-      <el-table-column label="用户ID" align="center" prop="userId" />
-      <el-table-column label="团队名称" align="center" prop="teamName" />
+      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="记录ID" align="center" prop="recordId"/>
+      <el-table-column label="用户昵称" align="center" prop="nickName"/>
+      <el-table-column label="团队名称" align="center" prop="teamName"/>
       <el-table-column label="状态" align="center" prop="status">
         <template #default="scope">
           <dict-tag :options="kh_shared_check" :value="scope.row.status"/>
         </template>
       </el-table-column>
-      <el-table-column label="积分" align="center" prop="score" />
+      <el-table-column label="积分" align="center" prop="score"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['KuiHua:scoreRecord:edit']">修改</el-button>
-          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['KuiHua:scoreRecord:remove']">删除</el-button>
+          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
+                     v-hasPermi="['KuiHua:scoreRecord:edit']">修改
+          </el-button>
+          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
+                     v-hasPermi="['KuiHua:scoreRecord:remove']">删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -111,31 +119,36 @@
     />
 
     <!-- 添加或修改葵花分数记录对话框 -->
-    <el-dialog :title="title" v-model="open" width="500px" append-to-body>
+    <el-dialog title="种草审核" v-model="open" width="1200px" append-to-body>
+      <el-descriptions :column="2">
+        <el-descriptions-item label="用户昵称">{{ form.nickName }}</el-descriptions-item>
+        <el-descriptions-item label="团队名称">{{ form.teamName }}</el-descriptions-item>
+        <el-descriptions-item label="种草链接" :span="2">
+          <el-link :href="prifix + form.sharedLink" type="primary" target="_blank">检查链接</el-link>
+        </el-descriptions-item>
+        <el-descriptions-item label="种草图片" :span="2">
+          <div class="shared-imgs">
+            <el-image class="img" v-for="img in form.sharedPicture"
+                      :src="'/oss-api'+img"
+                      @click="handleOnPreview('/oss-api'+img)"
+                      fit="cover"/>
+          </div>
+        </el-descriptions-item>
+      </el-descriptions>
+      <el-dialog v-model="dialogVisible" width="1200px">
+        <img style="width: 100%;" :src="dialogImageUrl" alt="Preview Image"/>
+      </el-dialog>
       <el-form ref="scoreRecordRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="用户ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入用户ID" />
-        </el-form-item>
-        <el-form-item label="团队ID" prop="teamId">
-          <el-input v-model="form.teamId" placeholder="请输入团队ID" />
-        </el-form-item>
-        <el-form-item label="团队名称" prop="teamName">
-          <el-input v-model="form.teamName" placeholder="请输入团队名称" />
-        </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="form.status">
             <el-radio
                 v-for="dict in kh_shared_check"
                 :key="dict.value"
                 :label="dict.value"
-            >{{dict.label}}</el-radio>
+
+            >{{ dict.label }}
+            </el-radio>
           </el-radio-group>
-        </el-form-item>
-        <el-form-item label="种草链接" prop="sharedLink">
-          <el-input v-model="form.sharedLink" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-        <el-form-item label="种草图片" prop="sharedPicture">
-          <el-input v-model="form.sharedPicture" type="textarea" placeholder="请输入内容" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -149,11 +162,17 @@
 </template>
 
 <script setup name="ScoreRecord">
-import { listScoreRecord, getScoreRecord, delScoreRecord, addScoreRecord, updateScoreRecord } from "@/api/KuiHua/scoreRecord";
+import {
+  listScoreRecord,
+  getScoreRecord,
+  delScoreRecord,
+  addScoreRecord,
+  updateScoreRecord
+} from "@/api/KuiHua/scoreRecord";
 
-const { proxy } = getCurrentInstance();
-const { kh_shared_check } = proxy.useDict('kh_shared_check');
-
+const {proxy} = getCurrentInstance();
+const {kh_shared_check} = proxy.useDict('kh_shared_check');
+const prifix = ref(import.meta.env.VITE_APP_BASE_API)
 const scoreRecordList = ref([]);
 const open = ref(false);
 const loading = ref(true);
@@ -163,7 +182,8 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
-
+const dialogImageUrl = ref('')
+const dialogVisible = ref(false)
 const data = reactive({
   form: {},
   queryParams: {
@@ -175,31 +195,13 @@ const data = reactive({
     score: null,
   },
   rules: {
-    userId: [
-      { required: true, message: "用户ID不能为空", trigger: "blur" }
-    ],
-    teamId: [
-      { required: true, message: "团队ID不能为空", trigger: "blur" }
-    ],
-    teamName: [
-      { required: true, message: "团队名称不能为空", trigger: "blur" }
-    ],
     status: [
-      { required: true, message: "状态不能为空", trigger: "change" }
-    ],
-    score: [
-      { required: true, message: "积分不能为空", trigger: "blur" }
-    ],
-    sharedLink: [
-      { required: true, message: "种草链接不能为空", trigger: "blur" }
-    ],
-    sharedPicture: [
-      { required: true, message: "种草图片不能为空", trigger: "blur" }
+      {required: true, message: "状态不能为空", trigger: "change"}
     ],
   }
 });
 
-const { queryParams, form, rules } = toRefs(data);
+const {queryParams, form, rules} = toRefs(data);
 
 /** 查询葵花分数记录列表 */
 function getList() {
@@ -234,6 +236,11 @@ function reset() {
     updateTime: null
   };
   proxy.resetForm("scoreRecordRef");
+}
+
+function handleOnPreview(url) {
+  dialogVisible.value = true;
+  dialogImageUrl.value = url;
 }
 
 /** 搜索按钮操作 */
@@ -297,12 +304,13 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const _recordIds = row.recordId || ids.value;
-  proxy.$modal.confirm('是否确认删除葵花分数记录编号为"' + _recordIds + '"的数据项？').then(function() {
+  proxy.$modal.confirm('是否确认删除葵花分数记录编号为"' + _recordIds + '"的数据项？').then(function () {
     return delScoreRecord(_recordIds);
   }).then(() => {
     getList();
     proxy.$modal.msgSuccess("删除成功");
-  }).catch(() => {});
+  }).catch(() => {
+  });
 }
 
 /** 导出按钮操作 */
@@ -314,3 +322,19 @@ function handleExport() {
 
 getList();
 </script>
+<style lang="scss" scoped>
+.shared-imgs {
+  display: grid;
+  grid-template-columns: repeat(
+        auto-fill,
+          minmax(25%, 1fr)
+      );
+  gap: 20px;
+
+  .img {
+    width: 250px;
+    height: 250px;
+    cursor: pointer;
+  }
+}
+</style>
