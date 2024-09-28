@@ -42,38 +42,38 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--            type="primary"-->
-<!--            plain-->
-<!--            icon="Plus"-->
-<!--            @click="handleAdd"-->
-<!--            v-hasPermi="['KuiHua:scoreRecord:add']"-->
-<!--        >新增-->
-<!--        </el-button>-->
-<!--      </el-col>-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--            type="success"-->
-<!--            plain-->
-<!--            icon="Edit"-->
-<!--            :disabled="single"-->
-<!--            @click="handleUpdate"-->
-<!--            v-hasPermi="['KuiHua:scoreRecord:edit']"-->
-<!--        >修改-->
-<!--        </el-button>-->
-<!--      </el-col>-->
-      <el-col :span="1.5">
-        <el-button
-            type="danger"
-            plain
-            icon="Delete"
-            :disabled="multiple"
-            @click="handleDelete"
-            v-hasPermi="['KuiHua:scoreRecord:remove']"
-        >删除
-        </el-button>
-      </el-col>
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--            type="primary"-->
+      <!--            plain-->
+      <!--            icon="Plus"-->
+      <!--            @click="handleAdd"-->
+      <!--            v-hasPermi="['KuiHua:scoreRecord:add']"-->
+      <!--        >新增-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--            type="success"-->
+      <!--            plain-->
+      <!--            icon="Edit"-->
+      <!--            :disabled="single"-->
+      <!--            @click="handleUpdate"-->
+      <!--            v-hasPermi="['KuiHua:scoreRecord:edit']"-->
+      <!--        >修改-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--            type="danger"-->
+      <!--            plain-->
+      <!--            icon="Delete"-->
+      <!--            :disabled="multiple"-->
+      <!--            @click="handleDelete"-->
+      <!--            v-hasPermi="['KuiHua:scoreRecord:remove']"-->
+      <!--        >删除-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
             type="warning"
@@ -84,11 +84,33 @@
         >导出
         </el-button>
       </el-col>
+      <el-col :span="1.5">
+
+        <el-popover :visible="cdpOpen" placement="bottom-end" :width="400" style="padding: 20px;">
+          <el-input v-model="cdpForm.clientId" style="margin-bottom: 10px" placeholder="开发者key"></el-input>
+          <el-input v-model="cdpForm.clientSecret" style="margin-bottom: 10px" placeholder="开发者秘钥"></el-input>
+          <div style="text-align: right; margin: 0">
+            <el-button size="small" type="primary" @click="handlePut2Cdp">
+              推送
+            </el-button>
+          </div>
+          <template #reference>
+            <el-button
+                type="warning"
+                plain
+                icon="Upload"
+                @click="cdpOpen = true"
+                v-hasPermi="['KuiHua:scoreRecord:export']"
+            >推送到CDP
+            </el-button>
+          </template>
+        </el-popover>
+      </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="scoreRecordList" @selection-change="handleSelectionChange">
-<!--      <el-table-column type="selection" width="55" align="center"/>-->
+      <!--      <el-table-column type="selection" width="55" align="center"/>-->
       <el-table-column label="序号" width="60" align="center" prop="recordId"/>
       <el-table-column label="用户昵称" align="center" prop="nickName"/>
       <el-table-column label="团队名称" align="center" prop="teamName"/>
@@ -158,6 +180,8 @@
         </div>
       </template>
     </el-dialog>
+
+
   </div>
 </template>
 
@@ -167,7 +191,7 @@ import {
   getScoreRecord,
   delScoreRecord,
   addScoreRecord,
-  updateScoreRecord
+  updateScoreRecord, put2Cdp
 } from "@/api/KuiHua/scoreRecord";
 
 const {proxy} = getCurrentInstance();
@@ -175,6 +199,7 @@ const {kh_shared_check} = proxy.useDict('kh_shared_check');
 const prifix = ref(import.meta.env.VITE_APP_BASE_API)
 const scoreRecordList = ref([]);
 const open = ref(false);
+const cdpOpen = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
 const ids = ref([]);
@@ -201,7 +226,21 @@ const data = reactive({
   }
 });
 
+const cdpForm = ref({
+  clientId: null,
+  clientSecret: null
+})
+
 const {queryParams, form, rules} = toRefs(data);
+
+function handlePut2Cdp() {
+  if (cdpForm.value.clientId && cdpForm.value.clientSecret) {
+    put2Cdp(cdpForm.value.clientId, cdpForm.value.clientSecret).then(res => {
+      proxy.$modal.msgSuccess("推送成功", res.msg);
+    })
+  }
+
+}
 
 /** 查询葵花分数记录列表 */
 function getList() {

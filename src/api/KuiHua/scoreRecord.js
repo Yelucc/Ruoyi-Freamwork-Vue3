@@ -36,6 +36,12 @@ export function addScoreRecord(data) {
   })
 }
 
+export function put2Cdp(clientId,clientSecret) {
+  return request({
+    url: '/KuiHua/scoreRecord/put2cdp/' + clientId + '/' + clientSecret,
+    method: 'post'
+  })
+}
 // 修改葵花分数记录
 export function updateScoreRecord(data) {
   return request({
