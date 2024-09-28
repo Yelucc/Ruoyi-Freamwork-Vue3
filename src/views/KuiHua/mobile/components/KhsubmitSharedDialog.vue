@@ -5,6 +5,7 @@
       width="90%"
       :fullscreen="true"
       style="padding: 0;background-color: #005adb;color: #ffffff"
+      append-to-body
       :show-close="true"
       :before-close="cancel"
   >
@@ -58,8 +59,10 @@
           </el-dialog>
         </el-form-item>
       </el-form>
-    </div>
 
+    </div>
+    <div class="bg-img">
+    </div>
     <template #footer>
       <div class="dialog-footer">
         <div class="submit-btn" @click="submitForm"></div>
@@ -88,10 +91,15 @@ const data = reactive({
   form: {},
   rules: {
     sharedLink: [
-      {required: true, message: "种草链接不能为空", trigger: "blur"}
+      {required: true, message: "种草链接不能为空", trigger: "blur"},
+      {
+        pattern: /.*(http|https).*/, // 匹配包含 http 或 https 的字符串
+        message: '种草链接无效',
+        trigger: 'blur'
+      }
     ],
     sharedPicture: [
-      {required: true, message: "种草链接不能为空", trigger: "blur"}
+      {required: true, message: "种草图片不能为空", trigger: "blur"}
     ],
   }
 });
@@ -126,11 +134,22 @@ function cancel() {
 /** 提交按钮 */
 function submitForm() {
   form.value.sharedPicture = fileList.value.map(meta => meta.raw)
+
+  const urlPattern = /https?:\/\/[^\s]+/;
+  const match =  form.value.sharedLink.match(urlPattern);
+  const url = match ? match[0] : null;
+  if (!url){
+    proxy.$modal.msgError("种草链接校验失败，请检查");
+    return
+  }
+
   proxy.$refs["scoreRecordRef"].validate(valid => {
     if (valid) {
       const formData = new FormData()
       // 将所有文件添加到 FormData
-      formData.append("sharedLink", form.value.sharedLink)
+
+
+      formData.append("sharedLink", url)
       fileList.value.forEach(file => {
         formData.append('sharedPicture', file.raw);
       });
@@ -150,6 +169,10 @@ function submitForm() {
 :deep(.el-upload-list--picture-card) {
   --el-upload-list-picture-card-size: 80px;
 }
+:deep(.el-dialog__footer){
+  position: relative;
+  z-index: 1;
+}
 
 :deep(.el-upload--picture-card) {
   --el-upload-picture-card-size: 58px;
@@ -161,11 +184,23 @@ function submitForm() {
 .form-label{
   color: #ffffff;
 }
+.bg-img{
+  position: absolute;
+  bottom: 0;
+  background: url("@/assets/images/common.png") no-repeat center center;
+  background-size: cover; /* 图片覆盖整个容器 */
+  width: 100%;
+  height: 260px;
+
+}
 .shared-content{
   padding: 0 20px;
   font-family: "HuaKang Yuan W7A", serif;
 }
 .dialog-footer{
+  //margin-top: 40%;
+  position: relative;
+  z-index: 1;
   padding: 0 20px;
   font-family: "HuaKang Yuan W7A", serif;
 }
@@ -173,6 +208,7 @@ function submitForm() {
   background: url("@/assets/images/submit-shared.png") no-repeat center center;
   background-size: cover; /* 图片覆盖整个容器 */
   width: 100%;
+
   height: 58px;
 }
 .header {
