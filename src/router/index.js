@@ -84,9 +84,15 @@ export const constantRoutes = [
     children: [
       {
         path: '/dashboard',
-        component: () => import('@/views/KuiHua/mobile/dashboard'),
+        component: () => import('@/views/KuiHua/mobile/dashboard/index.vue'),
         name: 'Dashboard',
-        meta: { title: 'Home', icon: 'dashboard', affix: true },
+        meta: { title: '葵花妈妈-种草', icon: 'dashboard', affix: true },
+      },
+      {
+        path: '/rule',
+        component: () => import('@/views/KuiHua/mobile/dashboard/rule.vue'),
+        name: 'Rule',
+        meta: { title: '葵花妈妈-规则', icon: 'dashboard', affix: true },
       },
     ],
   },
