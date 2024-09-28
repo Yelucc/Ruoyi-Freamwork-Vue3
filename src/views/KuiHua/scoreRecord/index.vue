@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="用户ID" prop="userId">
+    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="auto">
+      <el-form-item label="用户手机号" prop="nickName">
         <el-input
-            v-model="queryParams.userId"
-            placeholder="请输入用户ID"
+            v-model="queryParams.nickName"
+            placeholder="请输入用户手机号"
             clearable
             @keyup.enter="handleQuery"
         />
@@ -18,7 +18,7 @@
         />
       </el-form-item>
       <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择状态" clearable>
+        <el-select v-model="queryParams.status" style="width: 180px;" placeholder="请选择状态" clearable>
           <el-option
               v-for="dict in kh_shared_check"
               :key="dict.value"
@@ -42,27 +42,27 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-            type="primary"
-            plain
-            icon="Plus"
-            @click="handleAdd"
-            v-hasPermi="['KuiHua:scoreRecord:add']"
-        >新增
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-            type="success"
-            plain
-            icon="Edit"
-            :disabled="single"
-            @click="handleUpdate"
-            v-hasPermi="['KuiHua:scoreRecord:edit']"
-        >修改
-        </el-button>
-      </el-col>
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--            type="primary"-->
+<!--            plain-->
+<!--            icon="Plus"-->
+<!--            @click="handleAdd"-->
+<!--            v-hasPermi="['KuiHua:scoreRecord:add']"-->
+<!--        >新增-->
+<!--        </el-button>-->
+<!--      </el-col>-->
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--            type="success"-->
+<!--            plain-->
+<!--            icon="Edit"-->
+<!--            :disabled="single"-->
+<!--            @click="handleUpdate"-->
+<!--            v-hasPermi="['KuiHua:scoreRecord:edit']"-->
+<!--        >修改-->
+<!--        </el-button>-->
+<!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
             type="danger"
@@ -88,8 +88,8 @@
     </el-row>
 
     <el-table v-loading="loading" :data="scoreRecordList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="记录ID" align="center" prop="recordId"/>
+<!--      <el-table-column type="selection" width="55" align="center"/>-->
+      <el-table-column label="序号" width="60" align="center" prop="recordId"/>
       <el-table-column label="用户昵称" align="center" prop="nickName"/>
       <el-table-column label="团队名称" align="center" prop="teamName"/>
       <el-table-column label="状态" align="center" prop="status">
@@ -101,7 +101,7 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
-                     v-hasPermi="['KuiHua:scoreRecord:edit']">修改
+                     v-hasPermi="['KuiHua:scoreRecord:edit']">审核
           </el-button>
           <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
                      v-hasPermi="['KuiHua:scoreRecord:remove']">删除
@@ -124,7 +124,7 @@
         <el-descriptions-item label="用户昵称">{{ form.nickName }}</el-descriptions-item>
         <el-descriptions-item label="团队名称">{{ form.teamName }}</el-descriptions-item>
         <el-descriptions-item label="种草链接" :span="2">
-          <el-link :href="prifix + form.sharedLink" type="primary" target="_blank">检查链接</el-link>
+          <el-link :href="form.sharedLink" type="primary" target="_blank">检查链接</el-link>
         </el-descriptions-item>
         <el-descriptions-item label="种草图片" :span="2">
           <div class="shared-imgs">
@@ -317,7 +317,7 @@ function handleDelete(row) {
 function handleExport() {
   proxy.download('KuiHua/scoreRecord/export', {
     ...queryParams.value
-  }, `scoreRecord_${new Date().getTime()}.xlsx`)
+  }, `种草记录导出_${new Date().getTime()}.xlsx`)
 }
 
 getList();

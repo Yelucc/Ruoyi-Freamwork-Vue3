@@ -281,6 +281,7 @@ function handleLogin() {
       Cookies.set("username", loginForm.value.username, {expires: 30});
       Cookies.set("password", encrypt(loginForm.value.password), {expires: 30});
       Cookies.set("rememberMe", loginForm.value.rememberMe, {expires: 30});
+      userStore.autoLogin = true
       // 调用action的登录方法
       userStore.khlogin(loginForm.value).then(() => {
         visible.value = false
@@ -297,21 +298,24 @@ function handleLogin() {
 }
 
 function cookieLogin() {
-  const username = Cookies.get("username");
-  const password = Cookies.get("password");
-  if (username && !getToken()) {
-    loginForm.value = {
-      username: username,
-      password: decrypt(password),
-    };
-    userStore.khlogin(loginForm.value).then(() => {
-      visible.value = false
-      console.log("cookies 登录成功")
-    }).catch(() => {
-      Cookies.remove("username");
-      Cookies.remove("password");
-    })
+  if (userStore.autoLogin) {
+    const username = Cookies.get("username");
+    const password = Cookies.get("password");
+    if (username && !getToken()) {
+      loginForm.value = {
+        username: username,
+        password: decrypt(password),
+      };
+      userStore.khlogin(loginForm.value).then(() => {
+        visible.value = false
+        console.log("cookies 登录成功")
+      }).catch(() => {
+        Cookies.remove("username");
+        Cookies.remove("password");
+      })
+    }
   }
+
 }
 
 cookieLogin();
@@ -325,6 +329,7 @@ getCode();
     margin-top: 30vh !important;
   }
 }
+
 .login-dialog-wrapper {
   height: 600px;
   display: flex;

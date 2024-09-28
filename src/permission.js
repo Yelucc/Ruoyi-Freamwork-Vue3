@@ -31,7 +31,7 @@ router.beforeEach((to, from, next) => {
                 // 判断当前用户是否已拉取完user_info信息
                 useUserStore().getInfo().then(() => {
                     isRelogin.show = false
-                    if (useUserStore().roles.includes('KhChecker') ||useUserStore().roles.includes('admin')) {
+                    if (useUserStore().roles.includes('KhChecker') || useUserStore().roles.includes('admin')) {
                         usePermissionStore().generateRoutes().then(accessRoutes => {
                             // 根据roles权限生成可访问的路由表
                             accessRoutes.forEach(route => {
@@ -41,9 +41,12 @@ router.beforeEach((to, from, next) => {
                             })
                             next({...to, replace: true}) // hack方法 确保addRoutes已完成
                         })
-                    }else {
-                        ElMessage.error("种草用户无管理权限，请向管理员确认")
-                        next({path: '/'})
+                    } else {
+                        useUserStore().logOut().then(() => {
+                            useUserStore().autoLogin = false
+                            ElMessage.error("种草用户无管理权限，请向管理员确认")
+                            next({path: '/'})
+                        })
                     }
 
                 }).catch(err => {

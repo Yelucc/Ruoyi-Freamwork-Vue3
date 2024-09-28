@@ -8,6 +8,7 @@ const useUserStore = defineStore(
     {
         state: () => ({
             token: getToken(),
+            autoLogin: true,
             id: '',
             name: '',
             deptName: '',

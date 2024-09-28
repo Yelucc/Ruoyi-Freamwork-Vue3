@@ -70,7 +70,7 @@ export const constantRoutes = [
     children: [
       {
         path: '/admin/index',
-        component: () => import('@/views/index'),
+        component: () => import('@/views/KuiHua/scoreRecord'),
         name: 'Index',
         meta: { title: '首页', icon: 'dashboard', affix: true }
       }
