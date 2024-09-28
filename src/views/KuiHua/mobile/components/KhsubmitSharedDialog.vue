@@ -178,7 +178,7 @@ function submitForm() {
   --el-upload-picture-card-size: 58px;
   background: url("@/assets/images/img-load-btn.png") no-repeat center center;
   background-size: cover; /* 图片覆盖整个容器 */
-  width: 380px;
+  width: 90vw;
   height: 58px;
 }
 .form-label{

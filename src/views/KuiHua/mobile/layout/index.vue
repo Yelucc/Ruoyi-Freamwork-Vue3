@@ -12,7 +12,7 @@ import PortalMain from '@/views/KuiHua/mobile/layout/PortalMain.vue';
 
 .portal-wrapper {
   position: relative;
-  height: 100%;
+  //height: 100%;
   background-color: #005adb;
   width: 100%;
 }
