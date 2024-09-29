@@ -309,6 +309,7 @@ function cookieLogin() {
       userStore.khlogin(loginForm.value).then(() => {
         visible.value = false
         console.log("cookies 登录成功")
+        userStore.getInfo()
       }).catch(() => {
         Cookies.remove("username");
         Cookies.remove("password");

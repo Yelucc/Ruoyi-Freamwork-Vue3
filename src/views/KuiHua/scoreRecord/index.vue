@@ -99,7 +99,7 @@
                 type="warning"
                 plain
                 icon="Upload"
-                @click="cdpOpen = true"
+                @click="cdpOpen = !cdpOpen"
                 v-hasPermi="['KuiHua:scoreRecord:export']"
             >推送到CDP
             </el-button>
@@ -112,14 +112,17 @@
     <el-table v-loading="loading" :data="scoreRecordList" @selection-change="handleSelectionChange">
       <!--      <el-table-column type="selection" width="55" align="center"/>-->
       <el-table-column label="序号" width="60" align="center" prop="recordId"/>
-      <el-table-column label="用户昵称" align="center" prop="nickName"/>
+      <el-table-column label="用户手机号" align="center" prop="nickName"/>
       <el-table-column label="团队名称" align="center" prop="teamName"/>
+
+      <el-table-column label="积分" align="center" prop="score"/>
+      <el-table-column label="上传时间" align="center" prop="create_time"/>
       <el-table-column label="状态" align="center" prop="status">
         <template #default="scope">
           <dict-tag :options="kh_shared_check" :value="scope.row.status"/>
         </template>
       </el-table-column>
-      <el-table-column label="积分" align="center" prop="score"/>
+      <el-table-column label="审核时间" align="center" prop="update_time"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
@@ -143,7 +146,7 @@
     <!-- 添加或修改葵花分数记录对话框 -->
     <el-dialog title="种草审核" v-model="open" width="1200px" append-to-body>
       <el-descriptions :column="2">
-        <el-descriptions-item label="用户昵称">{{ form.nickName }}</el-descriptions-item>
+        <el-descriptions-item label="用户手机号">{{ form.nickName }}</el-descriptions-item>
         <el-descriptions-item label="团队名称">{{ form.teamName }}</el-descriptions-item>
         <el-descriptions-item label="种草链接" :span="2">
           <el-link :href="form.sharedLink" type="primary" target="_blank">检查链接</el-link>

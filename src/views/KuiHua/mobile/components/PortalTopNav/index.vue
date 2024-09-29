@@ -21,7 +21,7 @@
   </el-menu>
 </template>
 <script setup>
-import PortalHeadline from '@/views/portal/components/PortalHeadline';
+import PortalHeadline from '@/views/KuiHua/mobile/components/PortalHeadline';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();

@@ -124,7 +124,7 @@ getLeaderboard()
         .item:nth-child(1) {
           .left {
             .index {
-              background: url('src/assets/images/leaderboard_1.png') no-repeat center center;
+              background: url('@/assets/images/leaderboard_1.png') no-repeat center center;
               background-size: cover;
             }
           }
@@ -134,7 +134,7 @@ getLeaderboard()
         .item:nth-child(2) {
           .left {
             .index {
-              background: url('src/assets/images/leaderboard_2.png') no-repeat center center;
+              background: url('@/assets/images/leaderboard_2.png') no-repeat center center;
               background-size: cover;
             }
           }
@@ -144,7 +144,7 @@ getLeaderboard()
         .item:nth-child(3) {
           .left {
             .index {
-              background: url('src/assets/images/leaderboard_3.png') no-repeat center center;
+              background: url('@/assets/images/leaderboard_3.png') no-repeat center center;
               background-size: cover;
             }
           }

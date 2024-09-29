@@ -155,7 +155,7 @@ function submitForm() {
       });
       submitScoreRecord(formData).then(res => {
         proxy.$modal.msgSuccess("提交成功");
-        visible.value = false;
+        cancel()
         emit('callback')
       })
     }
