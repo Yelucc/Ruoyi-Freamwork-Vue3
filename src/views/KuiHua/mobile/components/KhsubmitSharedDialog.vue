@@ -6,7 +6,7 @@
       :fullscreen="true"
       style="padding: 0;background-color: #005adb;color: #ffffff"
       append-to-body
-      :show-close="true"
+      :show-close="false"
       :before-close="cancel"
   >
     <template #header>
@@ -20,6 +20,10 @@
         <div class="dept">
           {{ userStore.deptName }}
         </div>
+<!--        <el-button type="danger" circle @click="cancel">-->
+<!--          <el-icon><Close /></el-icon>-->
+<!--        </el-button>-->
+<!--        <el-icon size="30" @click="cancel"><CloseBold /></el-icon>-->
       </div>
     </template>
     <div class="shared-content">
@@ -63,6 +67,9 @@
     </div>
     <div class="bg-img">
     </div>
+    <el-backtop style="width: 100px;height: 100px; background: rgba(255,255,255,0.6)" :visibility-height="0" :right="30" :top="100" @click="cancel">
+      <el-icon :size="80" ><Back /></el-icon>
+    </el-backtop>
     <template #footer>
       <div class="dialog-footer">
         <div class="submit-btn" v-loading.fullscreen.lock="loading" @click="submitForm"></div>
@@ -78,7 +85,7 @@
 import {submitScoreRecord} from "@/api/KuiHua/scoreRecord.js";
 
 const visible = defineModel()
-import {CaretBottom, Plus} from '@element-plus/icons-vue'
+import {Back, CaretBottom, CircleCloseFilled, Close, CloseBold, Plus} from '@element-plus/icons-vue'
 import useUserStore from "@/store/modules/user.js";
 
 
@@ -135,7 +142,7 @@ function cancel() {
 
 /** 提交按钮 */
 function submitForm() {
-  loading.value = true
+
   form.value.sharedPicture = fileList.value.map(meta => meta.raw)
 
   const urlPattern = /https?:\/\/[^\s]+/;
@@ -143,7 +150,6 @@ function submitForm() {
   const url = match ? match[0] : null;
   if (!url) {
     proxy.$modal.msgError("种草链接校验失败，请检查");
-    loading.value = false
     return
   }
 
@@ -155,10 +161,13 @@ function submitForm() {
       fileList.value.forEach(file => {
         formData.append('sharedPicture', file.raw);
       });
+      loading.value = true
       submitScoreRecord(formData).then(res => {
         proxy.$modal.msgSuccess("提交成功");
         cancel()
         emit('callback')
+        loading.value = false
+      }).catch(()=>{
         loading.value = false
       })
     }
@@ -224,6 +233,7 @@ function submitForm() {
 .header {
   margin-right: 40px;
   padding: 10px 20px;
+  width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;

@@ -124,7 +124,7 @@
       </el-table-column>
       <el-table-column label="状态" align="center" prop="status">
         <template #default="scope">
-<!--          <dict-tag :options="kh_shared_check" :value="scope.row.status"/>-->
+          <!--          <dict-tag :options="kh_shared_check" :value="scope.row.status"/>-->
           <el-switch
               v-model="scope.row.status"
               active-value="Normal"
@@ -172,7 +172,9 @@
         </el-descriptions-item>
       </el-descriptions>
       <el-dialog v-model="dialogVisible" width="1200px">
-        <img style="width: 100%;" :src="dialogImageUrl" alt="Preview Image"/>
+        <div style="display:flex;justify-content:center">
+          <img style="height: 900px;width: auto" :src="dialogImageUrl" alt="Preview Image"/>
+        </div>
       </el-dialog>
       <el-form ref="scoreRecordRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="状态" prop="status">
@@ -181,7 +183,6 @@
                 v-for="dict in kh_shared_check"
                 :key="dict.value"
                 :label="dict.value"
-
             >{{ dict.label }}
             </el-radio>
           </el-radio-group>

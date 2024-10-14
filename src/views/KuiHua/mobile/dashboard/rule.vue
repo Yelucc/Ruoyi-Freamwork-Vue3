@@ -1,6 +1,6 @@
 <template>
   <div class="rule-wrapper">
-    <el-backtop style="width: 100px;height: 100px; background: rgba(255,255,255,0.6)" :visibility-height="20" :right="30" :top="100" @click="router.back()">
+    <el-backtop style="width: 100px;height: 100px; background: rgba(255,255,255,0.6)" :visibility-height="0" :right="30" :top="100" @click="router.back()">
       <el-icon :size="80" ><Back /></el-icon>
     </el-backtop>
   </div>
