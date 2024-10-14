@@ -65,8 +65,8 @@
     </div>
     <template #footer>
       <div class="dialog-footer">
-        <div class="submit-btn" @click="submitForm"></div>
-<!--        <el-button @click="cancel">取 消</el-button>-->
+        <div class="submit-btn" v-loading.fullscreen.lock="loading" @click="submitForm"></div>
+        <!--        <el-button @click="cancel">取 消</el-button>-->
       </div>
     </template>
 
@@ -81,6 +81,8 @@ const visible = defineModel()
 import {CaretBottom, Plus} from '@element-plus/icons-vue'
 import useUserStore from "@/store/modules/user.js";
 
+
+const loading = ref(false)
 const userStore = useUserStore()
 const uploadRef = ref(null)
 const dialogImageUrl = ref('')
@@ -133,13 +135,15 @@ function cancel() {
 
 /** 提交按钮 */
 function submitForm() {
+  loading.value = true
   form.value.sharedPicture = fileList.value.map(meta => meta.raw)
 
   const urlPattern = /https?:\/\/[^\s]+/;
-  const match =  form.value.sharedLink.match(urlPattern);
+  const match = form.value.sharedLink.match(urlPattern);
   const url = match ? match[0] : null;
-  if (!url){
+  if (!url) {
     proxy.$modal.msgError("种草链接校验失败，请检查");
+    loading.value = false
     return
   }
 
@@ -147,8 +151,6 @@ function submitForm() {
     if (valid) {
       const formData = new FormData()
       // 将所有文件添加到 FormData
-
-
       formData.append("sharedLink", url)
       fileList.value.forEach(file => {
         formData.append('sharedPicture', file.raw);
@@ -157,6 +159,7 @@ function submitForm() {
         proxy.$modal.msgSuccess("提交成功");
         cancel()
         emit('callback')
+        loading.value = false
       })
     }
   });
@@ -169,7 +172,8 @@ function submitForm() {
 :deep(.el-upload-list--picture-card) {
   --el-upload-list-picture-card-size: 80px;
 }
-:deep(.el-dialog__footer){
+
+:deep(.el-dialog__footer) {
   position: relative;
   z-index: 1;
 }
@@ -181,10 +185,12 @@ function submitForm() {
   width: 90vw;
   height: 58px;
 }
-.form-label{
+
+.form-label {
   color: #ffffff;
 }
-.bg-img{
+
+.bg-img {
   position: absolute;
   bottom: 0;
   background: url("@/assets/images/common.png") no-repeat center center;
@@ -193,24 +199,28 @@ function submitForm() {
   height: 260px;
 
 }
-.shared-content{
+
+.shared-content {
   padding: 0 20px;
   font-family: "HuaKang Yuan W7A", serif;
 }
-.dialog-footer{
+
+.dialog-footer {
   //margin-top: 40%;
   position: relative;
   z-index: 1;
   padding: 0 20px;
   font-family: "HuaKang Yuan W7A", serif;
 }
-.submit-btn{
+
+.submit-btn {
   background: url("@/assets/images/submit-shared.png") no-repeat center center;
   background-size: cover; /* 图片覆盖整个容器 */
   width: 100%;
 
   height: 58px;
 }
+
 .header {
   margin-right: 40px;
   padding: 10px 20px;

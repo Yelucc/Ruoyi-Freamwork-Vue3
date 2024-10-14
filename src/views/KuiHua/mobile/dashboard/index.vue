@@ -41,7 +41,9 @@ import KhLogin from "@/views/KuiHua/mobile/components/KhLogin.vue";
 import {getToken} from "@/utils/auth.js";
 import KhsubmitSharedDialog from "@/views/KuiHua/mobile/components/KhsubmitSharedDialog.vue";
 import {useRouter} from "vue-router";
+import useUserStore from "@/store/modules/user.js";
 
+const userStore = useUserStore()
 const router = useRouter()
 const leaderboard = ref([])
 const loginVisible = ref(false)
@@ -49,7 +51,9 @@ const sharedVisiable = ref(false)
 
 function handleOnClickJoin() {
   if (getToken()) {
-    sharedVisiable.value = true;
+    userStore.getInfo().then(() => {
+      sharedVisiable.value = true;
+    })
   } else {
     loginVisible.value = true;
   }
@@ -109,12 +113,12 @@ getLeaderboard()
       width: 100%;
       //border: #1ab394 solid 1px;
       background: url("@/assets/images/leaderboard.png") no-repeat top center;
-      background-size: contain;
+      background-size: cover;
       margin: 15px 20px;
       padding: 10% 20px;
 
       .content {
-        height: 350px;
+        height: 100%;
         overflow-y: auto;
 
         &::-webkit-scrollbar {

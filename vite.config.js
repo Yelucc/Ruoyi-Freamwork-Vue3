@@ -36,7 +36,7 @@ export default defineConfig(({ mode, command }) => {
           rewrite: (p) => p.replace(/^\/dev-api/, '')
         },
         '/oss-api': {
-          target: 'http://localhost:19000',
+          target: 'http://218.78.132.227:9000',
           changeOrigin: true,
           rewrite: (p) => p.replace(/^\/oss-api/, '')
         }

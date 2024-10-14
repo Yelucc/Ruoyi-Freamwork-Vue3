@@ -2,6 +2,8 @@ import {login, logout, getInfo} from '@/api/login'
 import {getToken, setToken, removeToken} from '@/utils/auth'
 import defAva from '@/assets/images/profile.jpg'
 import {khLogin} from "@/api/KuiHua/khuser.js";
+import Cookies from "js-cookie";
+import {decrypt} from "@/utils/jsencrypt.js";
 
 const useUserStore = defineStore(
     'user',
@@ -32,6 +34,26 @@ const useUserStore = defineStore(
                         reject(error)
                     })
                 })
+            }, cookieLogin() {
+                if (this.autoLogin) {
+                    const username = Cookies.get("username");
+                    const password = Cookies.get("password");
+                    if (username && !getToken()) {
+                        let loginForm = {
+                            username: username,
+                            password: decrypt(password),
+                        };
+                        this.khlogin(loginForm).then(() => {
+                            visible.value = false
+                            console.log("cookies 登录成功")
+                            this.getInfo()
+                        }).catch(() => {
+                            Cookies.remove("username");
+                            Cookies.remove("password");
+                        })
+                    }
+                }
+
             },
             khlogin(userInfo) {
                 const username = userInfo.username.trim()

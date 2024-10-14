@@ -116,13 +116,24 @@
       <el-table-column label="团队名称" align="center" prop="teamName"/>
 
       <el-table-column label="积分" align="center" prop="score"/>
-      <el-table-column label="上传时间" align="center" prop="create_time"/>
-      <el-table-column label="状态" align="center" prop="status">
+      <el-table-column label="上传时间" align="center" prop="createTime"/>
+      <el-table-column label="种草链接" align="center" prop="sharedLink">
         <template #default="scope">
-          <dict-tag :options="kh_shared_check" :value="scope.row.status"/>
+          <el-link :href="scope.row.sharedLink" type="primary" target="_blank">检查链接</el-link>
         </template>
       </el-table-column>
-      <el-table-column label="审核时间" align="center" prop="update_time"/>
+      <el-table-column label="状态" align="center" prop="status">
+        <template #default="scope">
+<!--          <dict-tag :options="kh_shared_check" :value="scope.row.status"/>-->
+          <el-switch
+              v-model="scope.row.status"
+              active-value="Normal"
+              inactive-value="Invalid"
+              @change="handleStatusChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column label="审核时间" align="center" prop="updateTime"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
@@ -245,6 +256,11 @@ function handlePut2Cdp() {
 
 }
 
+function handleStatusChange(row) {
+  form.value = row;
+  submitForm()
+}
+
 /** 查询葵花分数记录列表 */
 function getList() {
   loading.value = true;
@@ -328,7 +344,7 @@ function submitForm() {
     if (valid) {
       if (form.value.recordId != null) {
         updateScoreRecord(form.value).then(response => {
-          proxy.$modal.msgSuccess("修改成功");
+          proxy.$modal.msgSuccess("审核成功");
           open.value = false;
           getList();
         });
