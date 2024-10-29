@@ -13,7 +13,8 @@ import {checkRole} from "@/utils/permission.js";
 NProgress.configure({showSpinner: false});
 
 const whiteList = ['/login', '/register'];
-const kuiHuaList = ['/dashboard', '/rule']
+const kuiHuaList = ['/dashboard', '/rule'];
+const kuiHuaBackEndRules = ["admin", "KhChecker", "KhTeamLeader"]
 
 router.beforeEach((to, from, next) => {
     NProgress.start()
@@ -21,7 +22,7 @@ router.beforeEach((to, from, next) => {
         to.meta.title && useSettingsStore().setTitle(to.meta.title)
         /* has token*/
         if (to.path === '/login') {
-            next({path: '/'})
+            next({path: '/admin'})
             NProgress.done()
         } else if (whiteList.indexOf(to.path) !== -1 || kuiHuaList.indexOf(to.path) !== -1) {
             next()
@@ -31,7 +32,7 @@ router.beforeEach((to, from, next) => {
                 // 判断当前用户是否已拉取完user_info信息
                 useUserStore().getInfo().then(() => {
                     isRelogin.show = false
-                    if (useUserStore().roles.includes('KhChecker') || useUserStore().roles.includes('admin')) {
+                    if (kuiHuaBackEndRules.some(rule => useUserStore().roles.includes(rule))) {
                         usePermissionStore().generateRoutes().then(accessRoutes => {
                             // 根据roles权限生成可访问的路由表
                             accessRoutes.forEach(route => {

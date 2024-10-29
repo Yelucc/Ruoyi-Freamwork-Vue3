@@ -157,13 +157,14 @@ function handleLogin() {
           .login(loginForm.value)
           .then(() => {
             const query = route.query;
-            const otherQueryParams = Object.keys(query).reduce((acc, cur) => {
-              if (cur !== 'redirect') {
-                acc[cur] = query[cur];
-              }
-              return acc;
-            }, {});
-            router.push({path: '/admin', query: otherQueryParams});
+            // const otherQueryParams = Object.keys(query).reduce((acc, cur) => {
+            //   if (cur !== 'redirect') {
+            //     acc[cur] = query[cur];
+            //   }
+            //   return acc;
+            // }, {});
+            console.log("login be /admin/index")
+            router.push({path: '/admin/index'});
           })
           .catch(() => {
             loading.value = false;

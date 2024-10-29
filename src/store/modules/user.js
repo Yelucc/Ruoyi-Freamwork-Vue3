@@ -34,7 +34,8 @@ const useUserStore = defineStore(
                         reject(error)
                     })
                 })
-            }, cookieLogin() {
+            },
+            cookieLogin() {
                 if (this.autoLogin) {
                     const username = Cookies.get("username");
                     const password = Cookies.get("password");

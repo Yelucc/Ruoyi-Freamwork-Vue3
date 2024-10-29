@@ -10,12 +10,21 @@
         />
       </el-form-item>
       <el-form-item label="团队名称" prop="teamName">
-        <el-input
-            v-model="queryParams.teamName"
-            placeholder="请输入团队名称"
-            clearable
-            @keyup.enter="handleQuery"
-        />
+        <!--        <el-input-->
+        <!--            v-model="queryParams.teamName"-->
+        <!--            placeholder="请输入团队名称"-->
+        <!--            clearable-->
+        <!--            @keyup.enter="handleQuery"-->
+        <!--        />-->
+        <el-select v-model="queryParams.teamName" style="width: 180px;" placeholder="请输入或选择团队" filterable
+                   clearable>
+          <el-option
+              v-for="dict in teamList"
+              :key="dict.teamName"
+              :label="dict.teamName"
+              :value="dict.teamName"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="状态" prop="status">
         <el-select v-model="queryParams.status" style="width: 180px;" placeholder="请选择状态" clearable>
@@ -124,13 +133,14 @@
       </el-table-column>
       <el-table-column label="状态" align="center" prop="status">
         <template #default="scope">
-          <!--          <dict-tag :options="kh_shared_check" :value="scope.row.status"/>-->
+          <dict-tag :options="kh_shared_check" v-hasRole="['KhTeamLeader']" :value="scope.row.status"/>
           <el-switch
               v-model="scope.row.status"
               active-value="Normal"
               inactive-value="Invalid"
+              v-hasRole="['KhChecker']"
               @change="handleStatusChange(scope.row)"
-          ></el-switch>
+          />
         </template>
       </el-table-column>
       <el-table-column label="审核时间" align="center" prop="updateTime"/>
@@ -208,11 +218,14 @@ import {
   addScoreRecord,
   updateScoreRecord, put2Cdp
 } from "@/api/KuiHua/scoreRecord";
+import {listTeam} from "@/api/KuiHua/team.js";
 
 const {proxy} = getCurrentInstance();
 const {kh_shared_check} = proxy.useDict('kh_shared_check');
 const prifix = ref(import.meta.env.VITE_APP_BASE_API)
 const scoreRecordList = ref([]);
+const teamList = ref([]);
+
 const open = ref(false);
 const cdpOpen = ref(false);
 const loading = ref(true);
@@ -269,6 +282,15 @@ function getList() {
     scoreRecordList.value = response.rows;
     total.value = response.total;
     loading.value = false;
+  });
+}
+
+function getTeam() {
+  listTeam({
+    pageNum: 1,
+    pageSize: 99,
+  }).then(response => {
+    teamList.value = response.rows;
   });
 }
 
@@ -379,6 +401,7 @@ function handleExport() {
   }, `种草记录导出_${new Date().getTime()}.xlsx`)
 }
 
+getTeam();
 getList();
 </script>
 <style lang="scss" scoped>
